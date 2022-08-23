@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ControllerV4HandlerAdapter implements MyHandlerAdapter {
@@ -21,8 +22,19 @@ public class ControllerV4HandlerAdapter implements MyHandlerAdapter {
         ControllerV4 controller = (ControllerV4) handler;
 
         Map<String, String> paramMap = createParamMap(request);
-        
-        controller.process()
-        return null;
+        HashMap<String, Object> model = new HashMap<>();
+
+        String viewName = controller.process(paramMap, model);
+
+        ModelView mv = new ModelView(viewName);
+        mv.setModel(model);
+        return mv;
+    }
+
+    private static Map<String, String> createParamMap(HttpServletRequest request) {
+        Map<String, String> paramMap = new HashMap<>();
+        request.getParameterNames().asIterator()
+                .forEachRemaining((paramName -> paramMap.put(paramName, request.getParameter(paramName))));
+        return paramMap;
     }
 }
